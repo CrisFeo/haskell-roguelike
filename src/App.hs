@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeFamilies #-}
 -- TODO Document
 module App
   ( run
@@ -15,9 +16,9 @@ import Lens.Micro.Platform
 
 import Dungeon (dungeonMap, renderDungeon)
 import State (St (St), enemyPos, playerPos)
-import Enemy (handleEnemyEvents, placeEnemy)
+import Enemy (enemyTile, handleEnemyEvents)
 import Events (BrickGameEvent, GameEvent, GameEventHandler, HandlerResult, runHandlers)
-import Player (handlePlayerEvents, placePlayer)
+import Player (playerTile, handlePlayerEvents)
 
 black :: Color
 black = rgbColor (0::Int) (0::Int) (0::Int)
@@ -42,14 +43,15 @@ appAttrs = attrMap (white `on` black)
                    , ("Enemy", red `on` black) ]
 
 drawUI :: St -> [Widget ()]
-drawUI st =  [ center . renderDungeon . placeObjects $ dungeonMap ]
-  where placeObjects = placeEnemy (st ^. enemyPos) . placePlayer (st ^. playerPos)
+drawUI st =  [ center . renderDungeon . placePlayer . placeEnemy $ dungeonMap ]
+  where placeEnemy g = g & ix (st ^. enemyPos) .~ enemyTile
+        placePlayer g = g & ix (st ^. playerPos) .~ playerTile
 
 handleAppEvents :: GameEventHandler
 handleAppEvents _ st ev =
   case ev of
        VtyEvent (EvKey KEsc []) -> Right . halt $ st
-       _                            -> Left . return $ st
+       _                        -> Left . return $ st
 
 handleEvent :: Chan GameEvent -> St -> BrickGameEvent -> HandlerResult
 handleEvent ch = runHandlers ch [ handleAppEvents

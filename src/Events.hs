@@ -28,7 +28,6 @@ sendStep ch st = do
   liftIO $ writeChan ch Step
   return st
 
-
 runHandlers :: Chan GameEvent -> [GameEventHandler] -> St -> BrickGameEvent -> HandlerResult
 runHandlers _ [] st _ = continue st
 runHandlers ch (h:hs) st ev = runHandlers' $ h ch st ev

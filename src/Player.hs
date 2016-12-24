@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- TODO Document
 module Player
-  ( handlePlayerEvents
-  , placePlayer
+  ( playerTile
+  , handlePlayerEvents
   ) where
 
 import Brick.Types (BrickEvent (VtyEvent))
@@ -11,14 +11,11 @@ import Lens.Micro.Platform
 
 import Events (GameEventHandler, sendStep)
 import Dungeon (Tile (Tile), dungeonMap, isPassable)
-import Grid (Coordinate, Grid, createGrid, setRange)
+import Grid (Coordinate)
 import State (St, playerPos)
 
 playerTile :: Tile
 playerTile = Tile '@' "Player"
-
-placePlayer :: Coordinate -> Grid Tile -> Grid Tile
-placePlayer c = setRange c (createGrid (1, 1) (const playerTile))
 
 movePlayer :: St -> Coordinate -> St
 movePlayer st (dx, dy) = if isPassable dungeonMap newPos

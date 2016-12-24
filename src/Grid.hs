@@ -29,22 +29,22 @@ createGrid (w, h) f = array domain points
 -- Render a Grid into a hierarchy of Brick widgets which can be rendered into a
 -- viewport.
 renderGrid :: (a -> Widget ()) -> Grid a -> Widget ()
-renderGrid r m = hBox . map (vBox . map r) $ rows
-  where ((_, sY), (_, eY)) = bounds m
-        rows = divvy (eY - sY + 1) . elems $ m
+renderGrid r g = hBox . map (vBox . map r) $ rows
+  where ((_, sY), (_, eY)) = bounds g
+        rows = divvy (eY - sY + 1) . elems $ g
 
 -- Partition an input list into a list of sublists of the specified length.
 -- Depending on the length of the input list the length of the final partition
 -- may be shorter than the partition size.
 divvy :: Int -> [a] -> [[a]]
 divvy _ [] = []
-divvy n l = take n l : divvy n (drop n l)
+divvy n l  = take n l : divvy n (drop n l)
 
 -- Returns a new Grid which is the result of inserting the first Grid into the
 -- second at the specifed Coordinate.
 setRange :: Coordinate -> Grid a -> Grid a -> Grid a
-setRange (x, y) sm m = foldl (&) m . map copyFromSubMap $ coords
-  where ((sXm, sYm), (eXm, eYm)) = bounds sm
-        coords = [(xm, ym) | xm <- [sXm..eXm], ym <- [sYm..eYm]]
-        copyFromSubMap c@(xc, yc) = maybe id (ix (x + xc, y + yc) .~) (sm ^? ix c)
+setRange (x, y) sg g = foldl (&) g . map copyFromSubMap $ coords
+  where ((sXg, sYg), (eXg, eYg)) = bounds sg
+        coords = [(xg, yg) | xg <- [sXg..eXg], yg <- [sYg..eYg]]
+        copyFromSubMap c@(xc, yc) = maybe id (ix (x + xc, y + yc) .~) (sg ^? ix c)
 

@@ -38,8 +38,8 @@ column :: Grid Tile
 column = blankTileGrid (2, 2) wall
 
 dungeonMap :: Grid Tile
-dungeonMap = foldl (\m (c, sm) -> setRange c sm m) (room mapDim) terrain
-  where mapDim = (20, 20)
+dungeonMap = foldl (\g (c, sg) -> setRange c sg g) (room dim) terrain
+  where dim = (20, 20)
         terrain = [ ((0 , 0 ), column)
                   , ((18, 0 ), column)
                   , ((9 , 9 ), column)
@@ -47,4 +47,4 @@ dungeonMap = foldl (\m (c, sm) -> setRange c sm m) (room mapDim) terrain
                   , ((18, 18), column)]
 
 isPassable :: Grid Tile -> Coordinate -> Bool
-isPassable m c = m ! c == flr
+isPassable g c = g ! c == flr
