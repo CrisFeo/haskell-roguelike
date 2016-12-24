@@ -14,8 +14,7 @@ import Control.Concurrent (Chan, newChan, writeChan)
 import qualified Graphics.Vty as V
 import Lens.Micro.Platform
 
-import Dungeon (dungeonMap)
-import Map (renderMap)
+import Dungeon (dungeonMap, renderDungeon)
 import State (St (St), enemyPos, playerPos)
 import Enemy (handleEnemyEvents, placeEnemy)
 import Events (BrickGameEvent, GameEvent, GameEventHandler, HandlerResult, runHandlers)
@@ -44,7 +43,8 @@ appAttrs = attrMap (white `on` black)
                    , ("Enemy", red `on` black) ]
 
 drawUI :: St -> [Widget ()]
-drawUI st =  [ center . renderMap . placeEnemy (st ^. enemyPos) . placePlayer (st ^. playerPos) $ dungeonMap ]
+drawUI st =  [ center . renderDungeon . placeObjects $ dungeonMap ]
+  where placeObjects = placeEnemy (st ^. enemyPos) . placePlayer (st ^. playerPos)
 
 handleAppEvents :: GameEventHandler
 handleAppEvents ch st ev =

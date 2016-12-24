@@ -1,14 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
--- Dungeon is responsible for building dungeon maps and querying for various
--- properties of dungeons.
+-- Dungeon is responsible for building/rendering dungeons and querying for
+-- various properties of them.
 module Dungeon
-  ( dungeonMap
+  ( Tile (Tile)
+  , dungeonMap
   , isPassable
+  , renderDungeon
   ) where
 
+import Brick.Widgets.Core (withAttr, str)
+import Brick.AttrMap (AttrName)
+import Brick.Types (Widget)
 import Data.Array
 
-import Map (Coordinate, Dimensions, Map, Tile (Tile), createMap, setRange)
+import Grid (Coordinate, Dimensions, Grid, createGrid, renderGrid, setRange)
+
+data Tile = Tile { char :: Char
+                 , attr :: AttrName }
+          deriving (Show, Eq)
 
 wall :: Tile
 wall = Tile '#' "Wall"
@@ -16,16 +25,20 @@ wall = Tile '#' "Wall"
 flr :: Tile
 flr = Tile '.' "Floor"
 
-blankMap :: Dimensions -> Tile -> Map
-blankMap d t = createMap d (const t)
+renderDungeon :: Grid Tile -> Widget ()
+renderDungeon = renderGrid renderTile
+  where renderTile (Tile c a) = withAttr a $ str [c]
 
-room :: Dimensions -> Map
-room d@(w, h) = setRange (1, 1) (blankMap (w-2, h-2) flr) (blankMap d wall)
+blankTileGrid :: Dimensions -> Tile -> Grid Tile
+blankTileGrid d t = createGrid d (const t)
 
-column :: Map
-column = blankMap (2, 2) wall
+room :: Dimensions -> Grid Tile
+room d@(w, h) = setRange (1, 1) (blankTileGrid (w-2, h-2) flr) (blankTileGrid d wall)
 
-dungeonMap :: Map
+column :: Grid Tile
+column = blankTileGrid (2, 2) wall
+
+dungeonMap :: Grid Tile
 dungeonMap = foldl (\m (c, sm) -> setRange c sm m) (room mapDim) terrain
   where mapDim = (20, 20)
         terrain = [ ((0 , 0 ), column)
@@ -34,5 +47,5 @@ dungeonMap = foldl (\m (c, sm) -> setRange c sm m) (room mapDim) terrain
                   , ((0 , 18), column)
                   , ((18, 18), column)]
 
-isPassable :: Map -> Coordinate -> Bool
+isPassable :: Grid Tile -> Coordinate -> Bool
 isPassable m c = m ! c == flr

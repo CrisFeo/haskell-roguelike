@@ -9,16 +9,16 @@ import Brick.Main (continue)
 import Brick.Types (BrickEvent (AppEvent))
 import Lens.Micro.Platform
 
-import Dungeon (dungeonMap, isPassable)
+import Dungeon (Tile (Tile), dungeonMap, isPassable)
 import Events (GameEventHandler, GameEvent (Step))
-import Map (Coordinate, Map, Tile (Tile), createMap, setRange)
+import Grid (Coordinate, Grid, createGrid, setRange)
 import State (St, enemyPos, playerPos)
 
 enemyTile :: Tile
 enemyTile = Tile 'g' "Enemy"
 
-placeEnemy :: Coordinate -> Map -> Map
-placeEnemy c = setRange c (createMap (1, 1) (const enemyTile))
+placeEnemy :: Coordinate -> Grid Tile -> Grid Tile
+placeEnemy c = setRange c (createGrid (1, 1) (const enemyTile))
 
 moveEnemy :: St -> St
 moveEnemy st = if isPassable dungeonMap newPos

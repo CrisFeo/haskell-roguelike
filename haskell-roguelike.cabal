@@ -16,7 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     App
-  other-modules:       Dungeon, Enemy, Events, Map, Player, State
+  other-modules:       Dungeon, Enemy, Events, Grid, Player, State
   build-depends:       base >= 4.7 && < 5
                      , array
                      , brick

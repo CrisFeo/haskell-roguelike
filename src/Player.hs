@@ -10,15 +10,15 @@ import Graphics.Vty (Event (EvKey), Key (KChar))
 import Lens.Micro.Platform
 
 import Events (GameEventHandler, sendStep)
-import Dungeon (dungeonMap, isPassable)
-import Map (Coordinate, Map, Tile (Tile), createMap, setRange)
+import Dungeon (Tile (Tile), dungeonMap, isPassable)
+import Grid (Coordinate, Grid, createGrid, setRange)
 import State (St, playerPos)
 
 playerTile :: Tile
 playerTile = Tile '@' "Player"
 
-placePlayer :: Coordinate -> Map -> Map
-placePlayer c = setRange c (createMap (1, 1) (const playerTile))
+placePlayer :: Coordinate -> Grid Tile -> Grid Tile
+placePlayer c = setRange c (createGrid (1, 1) (const playerTile))
 
 movePlayer :: St -> Coordinate -> St
 movePlayer st (dx, dy) = if isPassable dungeonMap newPos

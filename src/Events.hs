@@ -18,7 +18,6 @@ import Lens.Micro.Platform
 
 import Dungeon (dungeonMap, isPassable)
 import State (St, playerPos)
-import Map (Coordinate)
 
 type BrickGameEvent = BrickEvent () GameEvent
 type IntermediateHandlerResult = EventM () St
