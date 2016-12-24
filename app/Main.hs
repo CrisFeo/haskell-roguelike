@@ -4,5 +4,5 @@ import App (run)
 
 main :: IO ()
 main = do
-  run
+  _ <- run
   return ()

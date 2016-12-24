@@ -14,7 +14,6 @@ import Brick.Widgets.Core (hBox, vBox)
 import Data.Array
 import Lens.Micro.Platform
 
-type Bounds = (Coordinate, Coordinate)
 type Coordinate = (Int, Int)
 type Dimensions = (Int, Int)
 type Grid a = Array Coordinate a
@@ -46,6 +45,6 @@ divvy n l = take n l : divvy n (drop n l)
 setRange :: Coordinate -> Grid a -> Grid a -> Grid a
 setRange (x, y) sm m = foldl (&) m . map copyFromSubMap $ coords
   where ((sXm, sYm), (eXm, eYm)) = bounds sm
-        coords = [(x, y) | x <- [sXm..eXm], y <- [sYm..eYm]]
+        coords = [(xm, ym) | xm <- [sXm..eXm], ym <- [sYm..eYm]]
         copyFromSubMap c@(xc, yc) = maybe id (ix (x + xc, y + yc) .~) (sm ^? ix c)
 

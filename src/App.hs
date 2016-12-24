@@ -4,14 +4,13 @@ module App
   ( run
   ) where
 
-import Brick (App (..), on, fg, withAttr, str)
-import Brick.AttrMap (attrMap, AttrMap, AttrName)
-import Brick.Main (continue, halt, neverShowCursor, customMain)
-import Brick.Types (BrickEvent (VtyEvent), EventM (EventM), Next, Widget)
-import Brick.Widgets.Core (hBox, vBox)
+import Brick (App (..), on)
+import Brick.AttrMap (attrMap, AttrMap)
+import Brick.Main (halt, neverShowCursor, customMain)
+import Brick.Types (BrickEvent (VtyEvent), Widget)
 import Brick.Widgets.Center (center)
-import Control.Concurrent (Chan, newChan, writeChan)
-import qualified Graphics.Vty as V
+import Control.Concurrent (Chan, newChan)
+import Graphics.Vty (Color, Config (Config), Event (EvKey), Key (KEsc), mkVty, rgbColor)
 import Lens.Micro.Platform
 
 import Dungeon (dungeonMap, renderDungeon)
@@ -20,20 +19,20 @@ import Enemy (handleEnemyEvents, placeEnemy)
 import Events (BrickGameEvent, GameEvent, GameEventHandler, HandlerResult, runHandlers)
 import Player (handlePlayerEvents, placePlayer)
 
-black :: V.Color
-black = V.rgbColor 0 0 0
+black :: Color
+black = rgbColor (0::Int) (0::Int) (0::Int)
 
-gray :: V.Color
-gray = V.rgbColor 135 135 135
+gray :: Color
+gray = rgbColor (135::Int) (135::Int) (135::Int)
 
-green :: V.Color
-green = V.rgbColor 114 193 176
+green :: Color
+green = rgbColor (114::Int) (193::Int) (176::Int)
 
-red :: V.Color
-red = V.rgbColor 254 67 101
+red :: Color
+red = rgbColor (254::Int) (67::Int) (101::Int)
 
-white :: V.Color
-white = V.rgbColor 255 255 255
+white :: Color
+white = rgbColor (255::Int) (255::Int) (255::Int)
 
 appAttrs :: AttrMap
 appAttrs = attrMap (white `on` black)
@@ -47,9 +46,9 @@ drawUI st =  [ center . renderDungeon . placeObjects $ dungeonMap ]
   where placeObjects = placeEnemy (st ^. enemyPos) . placePlayer (st ^. playerPos)
 
 handleAppEvents :: GameEventHandler
-handleAppEvents ch st ev =
+handleAppEvents _ st ev =
   case ev of
-       VtyEvent (V.EvKey V.KEsc []) -> Right . halt $ st
+       VtyEvent (EvKey KEsc []) -> Right . halt $ st
        _                            -> Left . return $ st
 
 handleEvent :: Chan GameEvent -> St -> BrickGameEvent -> HandlerResult
@@ -70,4 +69,4 @@ initialState = St (5, 5) (14, 12)
 run :: IO St
 run = do
   eventChan <- newChan
-  customMain (V.mkVty $ mempty V.Config) (Just eventChan) (app eventChan) initialState
+  customMain (mkVty $ mempty Config) (Just eventChan) (app eventChan) initialState

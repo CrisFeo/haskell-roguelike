@@ -5,7 +5,6 @@ module Enemy
   , placeEnemy
   ) where
 
-import Brick.Main (continue)
 import Brick.Types (BrickEvent (AppEvent))
 import Lens.Micro.Platform
 
@@ -30,5 +29,5 @@ moveEnemy st = if isPassable dungeonMap newPos
         newPos = (ex + dx, ey + dy)
 
 handleEnemyEvents :: GameEventHandler
-handleEnemyEvents ch st (AppEvent Step) = Left . return . moveEnemy $ st
+handleEnemyEvents _ st (AppEvent Step) = Left . return . moveEnemy $ st
 handleEnemyEvents _ st _      = Left . return $ st

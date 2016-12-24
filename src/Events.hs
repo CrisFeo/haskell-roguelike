@@ -9,15 +9,12 @@ module Events
   , sendStep
   ) where
 
-import Brick.Main (continue, halt)
-import Brick.Types (BrickEvent (VtyEvent), EventM (EventM), Next, Widget)
-import Control.Concurrent (Chan, newChan, writeChan)
+import Brick.Main (continue)
+import Brick.Types (BrickEvent, EventM, Next)
+import Control.Concurrent (Chan, writeChan)
 import Control.Monad.IO.Class (liftIO)
-import qualified Graphics.Vty as V
-import Lens.Micro.Platform
 
-import Dungeon (dungeonMap, isPassable)
-import State (St, playerPos)
+import State (St)
 
 type BrickGameEvent = BrickEvent () GameEvent
 type IntermediateHandlerResult = EventM () St
@@ -36,7 +33,7 @@ runHandlers :: Chan GameEvent -> [GameEventHandler] -> St -> BrickGameEvent -> H
 runHandlers _ [] st _ = continue st
 runHandlers ch (h:hs) st ev = runHandlers' $ h ch st ev
   where runHandlers' :: Either IntermediateHandlerResult HandlerResult -> HandlerResult
-        runHandlers' (Left r) = do st <- r
-                                   runHandlers ch hs st ev
+        runHandlers' (Left r) = do nst <- r
+                                   runHandlers ch hs nst ev
         runHandlers' (Right r) = r
 

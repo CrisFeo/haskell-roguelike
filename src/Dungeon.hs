@@ -15,8 +15,7 @@ import Data.Array
 
 import Grid (Coordinate, Dimensions, Grid, createGrid, renderGrid, setRange)
 
-data Tile = Tile { char :: Char
-                 , attr :: AttrName }
+data Tile = Tile Char AttrName
           deriving (Show, Eq)
 
 wall :: Tile
