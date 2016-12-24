@@ -1,7 +1,7 @@
 -- Events exposes types related to Brick event handlers and helpers for
 -- dispatching of custom events.
 module Events
-  ( AppEvent
+  ( BrickGameEvent
   , GameEvent (..)
   , GameEventHandler
   , HandlerResult
@@ -20,19 +20,24 @@ import Dungeon (dungeonMap, isPassable)
 import State (St, playerPos)
 import Map (Coordinate)
 
-type AppEvent = BrickEvent () GameEvent
-type GameEventHandler = Chan GameEvent -> St -> AppEvent -> Maybe HandlerResult
+type BrickGameEvent = BrickEvent () GameEvent
+type IntermediateHandlerResult = EventM () St
 type HandlerResult = (EventM () (Next St))
+type GameEventHandler = Chan GameEvent -> St -> BrickGameEvent -> Either IntermediateHandlerResult HandlerResult
 
 data GameEvent = Step
 
-sendStep :: Chan GameEvent -> St -> HandlerResult
+sendStep :: Chan GameEvent -> St -> IntermediateHandlerResult
 sendStep ch st = do
   liftIO $ writeChan ch Step
-  continue st
+  return st
 
-runHandlers :: Chan GameEvent -> [GameEventHandler] -> St -> AppEvent -> Maybe HandlerResult -> HandlerResult
-runHandlers ch (h:hs) st ev Nothing = runHandlers ch hs st ev (h ch st ev)
-runHandlers _ _ _ _ (Just n)        = n
-runHandlers _ [] st _ _             = continue st
+
+runHandlers :: Chan GameEvent -> [GameEventHandler] -> St -> BrickGameEvent -> HandlerResult
+runHandlers _ [] st _ = continue st
+runHandlers ch (h:hs) st ev = runHandlers' $ h ch st ev
+  where runHandlers' :: Either IntermediateHandlerResult HandlerResult -> HandlerResult
+        runHandlers' (Left r) = do st <- r
+                                   runHandlers ch hs st ev
+        runHandlers' (Right r) = r
 

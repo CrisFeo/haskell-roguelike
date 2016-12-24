@@ -18,7 +18,7 @@ import Dungeon (dungeonMap)
 import Map (renderMap)
 import State (St (St), enemyPos, playerPos)
 import Enemy (handleEnemyEvents, placeEnemy)
-import Events (AppEvent, GameEvent, GameEventHandler, HandlerResult, runHandlers)
+import Events (BrickGameEvent, GameEvent, GameEventHandler, HandlerResult, runHandlers)
 import Player (handlePlayerEvents, placePlayer)
 
 black :: V.Color
@@ -49,14 +49,13 @@ drawUI st =  [ center . renderMap . placeEnemy (st ^. enemyPos) . placePlayer (s
 handleAppEvents :: GameEventHandler
 handleAppEvents ch st ev =
   case ev of
-       VtyEvent (V.EvKey V.KEsc []) -> Just $ halt st
-       _                            -> Nothing
+       VtyEvent (V.EvKey V.KEsc []) -> Right . halt $ st
+       _                            -> Left . return $ st
 
-handleEvent :: Chan GameEvent -> St -> AppEvent -> HandlerResult
-handleEvent ch st ev = runHandlers ch handlers st ev Nothing
-  where handlers = [ handleAppEvents
-                   , handlePlayerEvents
-                   , handleEnemyEvents ]
+handleEvent :: Chan GameEvent -> St -> BrickGameEvent -> HandlerResult
+handleEvent ch = runHandlers ch [ handleAppEvents
+                                , handlePlayerEvents
+                                , handleEnemyEvents ]
 
 app :: Chan GameEvent -> App St GameEvent ()
 app ch = App { appDraw = drawUI

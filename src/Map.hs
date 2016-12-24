@@ -29,7 +29,7 @@ data Tile = Tile { char :: Char
 
 -- Create a new Map with the specified dimensions. The Map is populated by the
 -- provided function which takes a Coordinate and returns the Tile at that
--- specified location.
+-- location.
 createMap :: Dimensions -> (Coordinate -> Tile) -> Map
 createMap (w, h) f = array domain points
   where domain = ((0, 0), (w-1, h-1))
@@ -60,20 +60,6 @@ row m i
   | i > eX    = []
   | otherwise = foldl (\r ci -> m ! (i, ci):r) [] [sY..eY]
   where ((sX, sY), (eX, eY)) = bounds m
-
--- Returns True if the specified Coordinate lies within the provided Bounds,
--- False otherwise.
-isInside :: Coordinate -> Bounds -> Bool
-isInside (x, y) ((sX, sY), (eX, eY))
-  | x < sX || x > eX = False
-  | y < sY || y > eY = False
-  | otherwise        = True
-
--- Returns True if the first provided Bounds lie within the second provided
--- Bounds, False otherwise.
-isMapInside :: Bounds -> Bounds -> Bool
-isMapInside ((sXa, sYa), (eXa, eYa)) bB =
-  isInside (sXa, eXa) bB && isInside (sYa, eYa) bB
 
 -- Returns a new Map where the first Map has been inserted into the second Map
 -- at the provided Coordinate.

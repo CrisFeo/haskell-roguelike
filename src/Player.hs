@@ -30,13 +30,13 @@ movePlayer st (dx, dy) = if isPassable dungeonMap newPos
 handlePlayerEvents :: GameEventHandler
 handlePlayerEvents ch st (VtyEvent (EvKey (KChar k) [])) =
   case k of
-       'h' -> Just . sendStep ch $ movePlayer st (-1,  0)
-       'j' -> Just . sendStep ch $ movePlayer st ( 0,  1)
-       'k' -> Just . sendStep ch $ movePlayer st ( 0, -1)
-       'l' -> Just . sendStep ch $ movePlayer st ( 1,  0)
-       'y' -> Just . sendStep ch $ movePlayer st (-1, -1)
-       'u' -> Just . sendStep ch $ movePlayer st ( 1, -1)
-       'b' -> Just . sendStep ch $ movePlayer st (-1,  1)
-       'n' -> Just . sendStep ch $ movePlayer st ( 1,  1)
-       _   -> Nothing
-handlePlayerEvents _ _ _ = Nothing
+       'h' -> Left . sendStep ch . movePlayer st $ (-1,  0)
+       'j' -> Left . sendStep ch . movePlayer st $ ( 0,  1)
+       'k' -> Left . sendStep ch . movePlayer st $ ( 0, -1)
+       'l' -> Left . sendStep ch . movePlayer st $ ( 1,  0)
+       'y' -> Left . sendStep ch . movePlayer st $ (-1, -1)
+       'u' -> Left . sendStep ch . movePlayer st $ ( 1, -1)
+       'b' -> Left . sendStep ch . movePlayer st $ (-1,  1)
+       'n' -> Left . sendStep ch . movePlayer st $ ( 1,  1)
+       _   -> Left . return $ st
+handlePlayerEvents _ st _ = Left . return $ st

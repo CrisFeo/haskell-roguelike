@@ -20,7 +20,6 @@ enemyTile = Tile 'g' "Enemy"
 placeEnemy :: Coordinate -> Map -> Map
 placeEnemy c = setRange c (createMap (1, 1) (const enemyTile))
 
-
 moveEnemy :: St -> St
 moveEnemy st = if isPassable dungeonMap newPos
                   then st & enemyPos .~ newPos
@@ -31,5 +30,5 @@ moveEnemy st = if isPassable dungeonMap newPos
         newPos = (ex + dx, ey + dy)
 
 handleEnemyEvents :: GameEventHandler
-handleEnemyEvents ch st (AppEvent Step) = Just . continue $ moveEnemy st
-handleEnemyEvents _ _ _      = Nothing
+handleEnemyEvents ch st (AppEvent Step) = Left . return . moveEnemy $ st
+handleEnemyEvents _ st _      = Left . return $ st
