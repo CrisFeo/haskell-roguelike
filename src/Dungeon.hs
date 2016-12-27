@@ -8,12 +8,13 @@ module Dungeon
   , renderDungeon
   ) where
 
-import Brick.Widgets.Core (withAttr, str)
-import Brick.AttrMap (AttrName)
-import Brick.Types (Widget)
-import Data.Array
+import           Brick.AttrMap      (AttrName)
+import           Brick.Types        (Widget)
+import           Brick.Widgets.Core (str, withAttr)
+import           Data.Array
 
-import Grid (Coordinate, Dimensions, Grid, createGrid, renderGrid, setRange)
+import           Grid               (Coordinate, Dimensions, Grid, createGrid,
+                                     renderGrid, setRange)
 
 data Tile = Tile Char AttrName
           deriving (Show, Eq)

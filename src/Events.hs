@@ -9,12 +9,12 @@ module Events
   , sendStep
   ) where
 
-import Brick.Main (continue)
-import Brick.Types (BrickEvent, EventM, Next)
-import Control.Concurrent (Chan, writeChan)
-import Control.Monad.IO.Class (liftIO)
+import           Brick.Main             (continue)
+import           Brick.Types            (BrickEvent, EventM, Next)
+import           Control.Concurrent     (Chan, writeChan)
+import           Control.Monad.IO.Class (liftIO)
 
-import State (St)
+import           State                  (St)
 
 type BrickGameEvent = BrickEvent () GameEvent
 type IntermediateHandlerResult = EventM () St

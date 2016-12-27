@@ -1,6 +1,6 @@
 name:                haskell-roguelike
 version:             0.1.0.0
-synopsis:            A simple roguelike exploring some simple systems programming in Haskell.
+synopsis:            A roguelike exploring some simple systems programming in Haskell.
 description:         Please see README.md
 homepage:            https://github.com/crisfeo/haskell-roguelike#readme
 license:             BSD3
@@ -15,8 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     App
-  other-modules:       Dungeon, Enemy, Events, Grid, Player, State
+  exposed-modules:     App, Dijkstra, Grid
+  other-modules:       Dungeon, Enemy, Events, Player, State
   build-depends:       base >= 4.7 && < 5
                      , array
                      , brick
@@ -26,10 +26,21 @@ library
 
 executable haskell-roguelike-exe
   hs-source-dirs:      app
-  main-is:             Main.hs
+  main-is:             Roguelike.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , haskell-roguelike
+  default-language:    Haskell2010
+
+executable haskell-roguelike-dijkstra-test-exe
+  hs-source-dirs:      app
+  main-is:             DijkstraTest.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , haskell-roguelike
+                     , brick
+                     , microlens-platform
+                     , vty
   default-language:    Haskell2010
 
 test-suite haskell-roguelike-test

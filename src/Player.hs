@@ -5,14 +5,14 @@ module Player
   , handlePlayerEvents
   ) where
 
-import Brick.Types (BrickEvent (VtyEvent))
-import Graphics.Vty (Event (EvKey), Key (KChar))
-import Lens.Micro.Platform
+import           Brick.Types         (BrickEvent (VtyEvent))
+import           Graphics.Vty        (Event (EvKey), Key (KChar))
+import           Lens.Micro.Platform
 
-import Events (GameEventHandler, sendStep)
-import Dungeon (Tile (Tile), dungeonMap, isPassable)
-import Grid (Coordinate)
-import State (St, playerPos)
+import           Dungeon             (Tile (Tile), dungeonMap, isPassable)
+import           Events              (GameEventHandler, sendStep)
+import           Grid                (Coordinate)
+import           State               (St, playerPos)
 
 playerTile :: Tile
 playerTile = Tile '@' "Player"

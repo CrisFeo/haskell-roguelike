@@ -5,18 +5,23 @@ module Grid
   , Dimensions
   , Grid
   , createGrid
+  , dim
   , renderGrid
   , setRange
   ) where
 
-import Brick.Types (Widget)
-import Brick.Widgets.Core (hBox, vBox)
-import Data.Array
-import Lens.Micro.Platform
+import           Brick.Types         (Widget)
+import           Brick.Widgets.Core  (hBox, vBox)
+import           Data.Array
+import           Lens.Micro.Platform
 
 type Coordinate = (Int, Int)
 type Dimensions = (Int, Int)
 type Grid a = Array Coordinate a
+
+dim :: Grid a -> Dimensions
+dim g = (w + 1, h + 1)
+  where (_ , (w, h)) = bounds g
 
 -- Create a new Grid with the specified dimensions. The Grid is populated by
 -- the provided function which takes a Coordinate and returns the contents at
@@ -30,8 +35,8 @@ createGrid (w, h) f = array domain points
 -- viewport.
 renderGrid :: (a -> Widget ()) -> Grid a -> Widget ()
 renderGrid r g = hBox . map (vBox . map r) $ rows
-  where ((_, sY), (_, eY)) = bounds g
-        rows = divvy (eY - sY + 1) . elems $ g
+  where (_, h) = dim g
+        rows = divvy h . elems $ g
 
 -- Partition an input list into a list of sublists of the specified length.
 -- Depending on the length of the input list the length of the final partition

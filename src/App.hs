@@ -1,24 +1,27 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeFamilies      #-}
 -- TODO Document
 module App
   ( run
   ) where
 
-import Brick (App (..), on)
-import Brick.AttrMap (attrMap, AttrMap)
-import Brick.Main (halt, neverShowCursor, customMain)
-import Brick.Types (BrickEvent (VtyEvent), Widget)
-import Brick.Widgets.Center (center)
-import Control.Concurrent (Chan, newChan)
-import Graphics.Vty (Color, Config (Config), Event (EvKey), Key (KEsc), mkVty, rgbColor)
-import Lens.Micro.Platform
+import           Brick                (App (..), on)
+import           Brick.AttrMap        (AttrMap, attrMap)
+import           Brick.Main           (customMain, halt, neverShowCursor)
+import           Brick.Types          (BrickEvent (VtyEvent), Widget)
+import           Brick.Widgets.Center (center)
+import           Control.Concurrent   (Chan, newChan)
+import           Graphics.Vty         (Color, Config (Config), Event (EvKey),
+                                       Key (KEsc), mkVty, rgbColor)
+import           Lens.Micro.Platform
 
-import Dungeon (dungeonMap, renderDungeon)
-import State (St (St), enemyPos, playerPos)
-import Enemy (enemyTile, handleEnemyEvents)
-import Events (BrickGameEvent, GameEvent, GameEventHandler, HandlerResult, runHandlers)
-import Player (playerTile, handlePlayerEvents)
+import           Dungeon              (dungeonMap, renderDungeon)
+import           Enemy                (enemyTile, handleEnemyEvents)
+import           Events               (BrickGameEvent, GameEvent,
+                                       GameEventHandler, HandlerResult,
+                                       runHandlers)
+import           Player               (handlePlayerEvents, playerTile)
+import           State                (St (St), enemyPos, playerPos)
 
 black :: Color
 black = rgbColor (0::Int) (0::Int) (0::Int)

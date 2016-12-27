@@ -6,11 +6,12 @@ module State
   , playerPos
   ) where
 
-import Lens.Micro.Platform
+import           Lens.Micro.Platform
 
-import Grid (Coordinate)
+import           Dijkstra            (Map)
+import           Grid                (Coordinate)
 
 data St = St { _playerPos :: Coordinate
-             , _enemyPos :: Coordinate } deriving (Show)
+             , _enemyPos  :: Coordinate } deriving (Show)
 
 makeLenses ''St
