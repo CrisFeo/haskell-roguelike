@@ -8,20 +8,27 @@ module App
 import           Brick                (App (..), on)
 import           Brick.AttrMap        (AttrMap, attrMap)
 import           Brick.Main           (customMain, halt, neverShowCursor)
-import           Brick.Types          (BrickEvent (VtyEvent), Widget)
-import           Brick.Widgets.Center (center)
+import           Brick.Types          (BrickEvent (VtyEvent), Padding (..),
+                                       Widget)
+import           Brick.Widgets.Border (borderWithLabel)
+import           Brick.Widgets.Center (center, hCenter)
+import           Brick.Widgets.Core   (hBox, hLimit, padLeft, str, vBox,
+                                       withAttr, withBorderStyle)
 import           Control.Concurrent   (Chan, newChan)
 import           Graphics.Vty         (Color, Config (Config), Event (EvKey),
                                        Key (KEsc), mkVty, rgbColor)
 import           Lens.Micro.Platform
 
-import           Dungeon              (dungeonMap, renderDungeon)
+import           Dungeon              (Tile, dungeonMap, renderDungeon)
 import           Enemy                (enemyTile, handleEnemyEvents)
 import           Events               (BrickGameEvent, GameEvent,
                                        GameEventHandler, HandlerResult,
                                        runHandlers)
+import           Grid                 (Coordinate, Grid)
 import           Player               (handlePlayerEvents, playerTile)
-import           State                (St (St), enemyPos, playerPos)
+import           State                (St (..), enemyPos, playerHealth,
+                                       playerPos)
+import           UI                   (drawUI)
 
 black :: Color
 black = rgbColor (0::Int) (0::Int) (0::Int)
@@ -43,12 +50,14 @@ appAttrs = attrMap (white `on` black)
                    [ ("Wall", black `on` gray )
                    , ("Floor", gray `on` black)
                    , ("Player", green `on` black)
-                   , ("Enemy", red `on` black) ]
+                   , ("Enemy", red `on` black)
+                   , ("ui-red", red `on` black) ]
 
-drawUI :: St -> [Widget ()]
-drawUI st =  [ center . renderDungeon . placePlayer . placeEnemy $ dungeonMap ]
-  where placeEnemy g = g & ix (st ^. enemyPos) .~ enemyTile
-        placePlayer g = g & ix (st ^. playerPos) .~ playerTile
+initialState :: St
+initialState = St
+  { _playerPos = (5, 5)
+  , _playerHealth = 3
+  , _enemyPos = (14, 12) }
 
 handleAppEvents :: GameEventHandler
 handleAppEvents _ st ev =
@@ -67,9 +76,6 @@ app ch = App { appDraw = drawUI
              , appAttrMap = const appAttrs
              , appStartEvent = return
              , appChooseCursor = neverShowCursor }
-
-initialState :: St
-initialState = St (5, 5) (14, 12)
 
 run :: IO St
 run = do

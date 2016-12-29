@@ -1,17 +1,18 @@
 {-# LANGUAGE TemplateHaskell #-}
 -- TODO Document
 module State
-  ( St (St)
+  ( St (..)
   , enemyPos
   , playerPos
+  , playerHealth
   ) where
 
 import           Lens.Micro.Platform
 
-import           Dijkstra            (Map)
 import           Grid                (Coordinate)
 
-data St = St { _playerPos :: Coordinate
-             , _enemyPos  :: Coordinate } deriving (Show)
+data St = St { _playerPos    :: Coordinate
+             , _playerHealth :: Int
+             , _enemyPos     :: Coordinate } deriving (Show)
 
 makeLenses ''St

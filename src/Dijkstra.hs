@@ -1,23 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- TODO Document
 module Dijkstra
-  ( Map
+  ( PathMap
   , Weight (..)
   , solve
   , minimumNeighbor
   ) where
 
-import           Brick.Types         (Widget)
-import           Brick.Widgets.Core  (str, withAttr)
 import           Control.Arrow
 import           Data.Array
-import           Data.Maybe
-import           Lens.Micro.Platform
 
-import           Grid                (Coordinate, Dimensions, Grid, createGrid,
-                                      dim, renderGrid)
+import           Grid          (Coordinate, Grid, createGrid, dim)
 
-type Map = Grid (Maybe Weight)
+type PathMap = Grid (Maybe Weight)
 type Cell = Maybe (Coordinate, Weight)
 
 data Weight = NegInf | Val Integer | PosInf
@@ -67,38 +62,38 @@ instance Ord Weight where
   compare _ PosInf        = LT
   compare (Val a) (Val b) = compare a b
 
-solve :: Map -> Map
+solve :: PathMap -> PathMap
 solve m = if m == nm then m else solve nm
   where nm = calculateWeights m
 
-calculateWeights :: Map -> Map
+calculateWeights :: PathMap -> PathMap
 calculateWeights m = createGrid (dim m) (calculateWeight m)
 
-calculateWeight :: Map -> Coordinate -> Maybe Weight
+calculateWeight :: PathMap -> Coordinate -> Maybe Weight
 calculateWeight m c = calcWeight (m ! c) . fmap snd . minimumNeighbor m $ c
   where calcWeight :: Maybe Weight -> Maybe Weight -> Maybe Weight
-        calcWeight Nothing mw = Nothing
+        calcWeight Nothing _ = Nothing
         calcWeight cw Nothing = cw
         calcWeight (Just cw) (Just mw) = if cw > mw * 2
                                             then Just $ mw + 1
                                             else Just cw
 
-minimumNeighbor :: Map -> Coordinate -> Cell
+minimumNeighbor :: PathMap -> Coordinate -> Cell
 minimumNeighbor m = foldl minCell Nothing . getNeighbors m
   where minCell :: Cell -> Cell -> Cell
         minCell Nothing b = b
         minCell a Nothing = a
         minCell (Just a@(_, wA))  (Just b@(_, wB)) = if wA < wB then Just a else Just b
 
-getNeighbors :: Map -> Coordinate -> [Cell]
+getNeighbors :: PathMap -> Coordinate -> [Cell]
 getNeighbors m = map getWeight . neighboringCoordinates m
   where getWeight :: Coordinate -> Cell
         getWeight c = fmap (\w -> (c, w)) (m ! c)
 
-neighboringCoordinates :: Map -> Coordinate -> [Coordinate]
+neighboringCoordinates :: PathMap -> Coordinate -> [Coordinate]
 neighboringCoordinates m (x, y) = filter inBounds . map ((+x) *** (+y)) $ deltas
   where (w, h) = dim m
         deltas = [ (-1, -1), ( 0, -1), ( 1, -1)
                  , (-1,  0),           ( 1,  0)
                  , (-1,  1), ( 0,  1), ( 1,  1) ]
-        inBounds (x, y) = 0 <= x && x < w && 0 <= y && y < h
+        inBounds (cx, cy) = 0 <= cx && cx < w && 0 <= cy && cy < h
